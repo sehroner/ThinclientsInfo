@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual: USB Provisioning - Thin Client Externalized</title>
+    <style>
+        @media print {
+            .page-break { page-break-before: always; }
+            body { font-size: 11pt; }
+            a { color: #ff9900 !important; }
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #e0e0e0;
+            background: #0d1117;
+            padding: 40px;
+        }
+
+        a { color: #ff9900; text-decoration: none; transition: color 0.2s; }
+        a:hover { color: #ffb84d; text-decoration: underline; }
+</style>
+</head>
+<body>
+<style>
+        .cover {
+            text-align: center;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, #161b22 0%, #1a1f2e 50%, #0d1117 100%);
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,153,0,0.05) 0%, transparent 50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .cover h1 {
+            font-size: 2.5em;
+            margin-bottom: 12px;
+            color: #ff9900;
+            position: relative;
+            text-shadow: 0 0 30px rgba(255,153,0,0.3);
+        }
+
+        .cover h2 {
+            font-size: 1.3em;
+            font-weight: 300;
+            color: #8b949e;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .cover .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9900, #e68a00);
+            color: #0d1117;
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 0.9em;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(255,153,0,0.3);
+        }
+
+        .cover .subtitle {
+            margin-top: 25px;
+            font-size: 0.85em;
+            color: #6e7681;
+            position: relative;
+        }
+
+        h2 {
+            color: #ff9900;
+            font-size: 1.5em;
+            margin: 35px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #21262d;
+        }
+
+        h3 {
+            color: #c9d1d9;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+        }
+
+        .substep {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 18px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 1px rgba(255,153,0,0.1);
+            transition: box-shadow 0.2s;
+        }
+
+        .substep:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 3px rgba(255,153,0,0.15);
+        }
+
+        .substep h3 {
+            margin-top: 0;
+        }
+
+        .step-container {
+            background: linear-gradient(135deg, #161b22, #1c2128);
+            border: 1px solid #30363d;
+            border-left: 4px solid #ff9900;
+            border-radius: 0 12px 12px 0;
+            padding: 22px 28px;
+            margin: 25px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff9900, #e68a00);
+            color: #0d1117;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(255,153,0,0.3);
+        }
+
+        .step-title {
+            display: inline;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .warning-box {
+            background: rgba(255,193,7,0.08);
+            border: 1px solid rgba(255,193,7,0.3);
+            border-left: 4px solid #ffc107;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 22px;
+            margin: 15px 0;
+        }
+
+        .warning-box::before { content: "⚠️ "; font-size: 1.1em; }
+
+        .info-box {
+            background: rgba(56,132,244,0.08);
+            border: 1px solid rgba(56,132,244,0.3);
+            border-left: 4px solid #3884f4;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 22px;
+            margin: 15px 0;
+        }
+
+        .info-box::before { content: "ℹ️ "; font-size: 1.1em; }
+
+        .success-box {
+            background: rgba(40,167,69,0.08);
+            border: 1px solid rgba(40,167,69,0.3);
+            border-left: 4px solid #28a745;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 22px;
+            margin: 15px 0;
+        }
+
+        .success-box::before { content: "✅ "; font-size: 1.1em; }
+
+        .error-box {
+            background: rgba(220,53,69,0.08);
+            border: 1px solid rgba(220,53,69,0.3);
+            border-left: 4px solid #dc3545;
+            border-radius: 0 10px 10px 0;
+            padding: 16px 22px;
+            margin: 15px 0;
+        }
+
+        .error-box::before { content: "❌ "; font-size: 1.1em; }
+
+        code {
+            background: #1c2128;
+            color: #ff9900;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.88em;
+            border: 1px solid #30363d;
+        }
+
+        pre {
+            background: #161b22;
+            color: #e6edf3;
+            padding: 18px 22px;
+            border-radius: 10px;
+            border: 1px solid #30363d;
+            overflow-x: auto;
+            margin: 12px 0;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.88em;
+            line-height: 1.6;
+        }
+
+        pre .command { color: #ff9900; }
+        pre .comment { color: #6e7681; font-style: italic; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+        }
+
+        th {
+            background: linear-gradient(135deg, #1c2128, #21262d);
+            color: #ff9900;
+            padding: 14px 18px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #ff9900;
+        }
+
+        td {
+            padding: 12px 18px;
+            border-bottom: 1px solid #21262d;
+            color: #c9d1d9;
+        }
+
+        tr:nth-child(even) { background: rgba(22,27,34,0.5); }
+        tr:hover { background: rgba(255,153,0,0.05); }
+
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 6px 0; color: #c9d1d9; }
+
+        .folder-tree {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 18px 22px;
+            font-family: 'Cascadia Code', 'Consolas', monospace;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        .folder-tree .folder { color: #ff9900; font-weight: bold; }
+        .folder-tree .file { color: #8b949e; }
+
+        .references {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin-top: 30px;
+        }
+
+        .references ul { list-style: none; margin-left: 0; }
+        .references li { 
+            margin: 10px 0; 
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .references li:hover { background: rgba(255,153,0,0.05); }
+
+        .toc {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin: 25px 0;
+        }
+
+        .toc h3 { margin-top: 0; color: #ff9900; font-size: 1.2em; }
+        .toc ol { margin-left: 20px; }
+        .toc li { margin: 10px 0; }
+        .toc a { color: #c9d1d9; font-weight: 500; }
+        .toc a:hover { color: #ff9900; }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 25px;
+            border-top: 1px solid #21262d;
+            color: #6e7681;
+            font-size: 0.85em;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #30363d, transparent);
+            margin: 30px 0;
+        }
+
+        .link-card {
+            display: inline-block;
+            background: #1c2128;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin: 4px 2px;
+            transition: all 0.2s;
+            font-size: 0.9em;
+        }
+        .link-card:hover {
+            border-color: #ff9900;
+            background: rgba(255,153,0,0.05);
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(255,153,0,0.15);
+        }
+    </style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+    <p style="position:absolute; top:15px; right:20px; font-size:0.75em; color:#6e7681; position:relative; text-align:right; margin-bottom:20px;">Generado por <strong style="color:#8b949e;">@fedaniea</strong></p>
+    <h1>📋 Manual de Provisioning USB</h1>
+    <h2>Thin Client Externalized<br>(FFNX / Golfball / Tennisball / AEN)</h2>
+    <div class="badge">OpsTech IT — Client Engineering</div>
+    <p class="subtitle">Vagrant + VirtualBox | Versión Mayo 2026</p>
+</div>
+
+<!-- ÍNDICE -->
+<div class="toc">
+    <h3>📑 Índice de contenidos</h3>
+    <ol>
+        <li><a href="#requisitos">Requisitos previos</a></li>
+        <li><a href="#paso1">Instalar VirtualBox</a></li>
+        <li><a href="#paso2">Instalar Vagrant</a></li>
+        <li><a href="#paso3">Descargar archivos de provisioning</a></li>
+        <li><a href="#paso4">Configurar estructura de carpetas</a></li>
+        <li><a href="#paso5">Añadir imagen Box a Vagrant</a></li>
+        <li><a href="#paso6">Lanzar la VM de provisioning</a></li>
+        <li><a href="#paso7">Crear el USB de provisioning</a></li>
+        <li><a href="#paso8">Provisionar el Thin Client</a></li>
+        <li><a href="#troubleshooting">Solución de problemas</a></li>
+    </ol>
+</div>
+
+<!-- REQUISITOS -->
+<h2 id="requisitos">📦 Requisitos Previos</h2>
+
+<h3>🖥️ Hardware necesario</h3>
+<table>
+    <tr><th>Elemento</th><th>Detalle</th></tr>
+    <tr><td>💻 Laptop</td><td>Amazon-provisioned con VPN a red interna</td></tr>
+    <tr><td>🔌 USB Drive</td><td><strong>Mínimo 8 GB, USB 2.0</strong> (USB 3.0 NO compatible)</td></tr>
+    <tr><td>🔄 Extensor USB 2.0</td><td>Solo si usas un USB 3.0</td></tr>
+    <tr><td>🖥️ Thin Client</td><td>HP t630, t640 o t655 (SKU aprobado por OpsTechIT)</td></tr>
+    <tr><td>⌨️ Teclado + Monitor</td><td>Para configurar BIOS del Thin Client</td></tr>
+    <tr><td>🌐 Ethernet</td><td>Conexión por cable (WiFi NO funciona para provisioning)</td></tr>
+</table>
+
+<div class="warning-box">
+    <strong>USB 3.0 no es compatible.</strong> Si solo tienes USB 3.0, necesitas un extensor/adaptador USB 2.0.
+</div>
+
+<h3>🔑 Permisos necesarios</h3>
+<table>
+    <tr><th>Permiso</th><th>Cómo obtenerlo</th></tr>
+    <tr><td>Acceso TAKA</td><td>Grupo POSIX: <code>fcjrtech</code>, <code>fcsrtech</code>, <code>fcsysadm</code> o <code>taka-external-users-edit</code></td></tr>
+    <tr><td>Midway + Yubikey/Zukey</td><td>Autenticación U2F para enrollment ADM</td></tr>
+    <tr><td>Cuenta ADM</td><td>IAM Role ADM-User en cuenta <code>695791272624</code></td></tr>
+</table>
+
+<h3>💾 Software necesario</h3>
+<table>
+    <tr><th>Software</th><th>Versión</th><th>Enlace de descarga</th></tr>
+    <tr><td>VirtualBox</td><td>7.2.6+ (o 6.1.x)</td><td><a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" class="link-card">⬇️ Descargar VirtualBox</a></td></tr>
+    <tr><td>Vagrant</td><td>2.4.9+</td><td><a href="https://developer.hashicorp.com/vagrant/downloads" target="_blank" class="link-card">⬇️ Descargar Vagrant</a></td></tr>
+    <tr><td>Archivos VM</td><td>Última versión</td><td><a href="https://drive.corp.amazon.com/folders/OTIE%20ClientEng/SharedPublic/Vagrant/usb_provisioning_image" target="_blank" class="link-card">⬇️ Amazon Drive</a></td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- PASO 1 -->
+<div class="step-container" id="paso1">
+    <span class="step-number">1</span>
+    <span class="step-title">Instalar VirtualBox</span>
+</div>
+
+<ol>
+    <li>Descarga VirtualBox:<br>
+        <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" class="link-card">🌐 virtualbox.org/wiki/Downloads</a></li>
+    <li>Activa <strong>Local Admin</strong> a través de ACME si es necesario</li>
+    <li>Ejecuta el instalador con las opciones por defecto</li>
+    <li>Usa tus credenciales A to Z si te pide permisos de administrador</li>
+</ol>
+
+<div class="info-box">
+    Si tienes problemas con VirtualBox 7.x para adjuntar USB, usa la versión <strong>6.1.x</strong>:<br>
+    <a href="https://www.virtualbox.org/wiki/Download_Old_Builds_6_1" target="_blank" class="link-card">⬇️ VirtualBox 6.1.x (Old Builds)</a>
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 2 -->
+<div class="step-container" id="paso2">
+    <span class="step-number">2</span>
+    <span class="step-title">Instalar Vagrant</span>
+</div>
+
+<ol>
+    <li>Descarga Vagrant:<br>
+        <a href="https://developer.hashicorp.com/vagrant/downloads" target="_blank" class="link-card">🌐 developer.hashicorp.com/vagrant/downloads</a><br>
+        Link directo Windows AMD64:<br>
+        <a href="https://releases.hashicorp.com/vagrant/2.4.9/vagrant_2.4.9_windows_amd64.msi" target="_blank" class="link-card">⬇️ vagrant_2.4.9_windows_amd64.msi</a>
+    </li>
+    <li>Selecciona <strong>Windows AMD64</strong></li>
+    <li>Ejecuta el instalador con opciones por defecto</li>
+    <li><strong>⚡ Reinicia el portátil</strong> (obligatorio)</li>
+</ol>
+
+<div class="warning-box">
+    <strong>El reinicio es obligatorio.</strong> Vagrant no funcionará correctamente sin reiniciar después de la instalación.
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 3 -->
+<div class="step-container" id="paso3">
+    <span class="step-number">3</span>
+    <span class="step-title">Descargar archivos de provisioning</span>
+</div>
+
+<ol>
+    <li>Accede a Amazon Drive (necesitas VPN):<br>
+        <a href="https://drive.corp.amazon.com/folders/OTIE%20ClientEng/SharedPublic/Vagrant/usb_provisioning_image" target="_blank" class="link-card">📂 OTIE ClientEng → Vagrant → usb_provisioning_image</a>
+    </li>
+    <li>Descarga estos dos archivos:
+        <ul>
+            <li><code>usb_provisioning_image.box</code> — imagen de la VM</li>
+            <li><code>Vagrantfile</code> — configuración de la VM</li>
+        </ul>
+    </li>
+</ol>
+
+<div class="divider"></div>
+
+<!-- PASO 4 -->
+<div class="step-container" id="paso4">
+    <span class="step-number">4</span>
+    <span class="step-title">Configurar estructura de carpetas</span>
+</div>
+
+<p>Vagrant necesita que los archivos estén organizados de una forma específica para funcionar. El archivo <code>.box</code> es la imagen de la VM y se usa solo una vez para importarla. El <code>Vagrantfile</code> es la configuración que Vagrant lee cada vez que lanzas la VM, y debe estar en su propia carpeta (<code>usb_creator</code>).</p>
+
+<div class="info-box">
+    <strong>¿Por qué esta estructura?</strong> Vagrant crea archivos internos (carpeta <code>.vagrant</code>) en el mismo directorio donde está el <code>Vagrantfile</code>. Separar el <code>.box</code> del <code>Vagrantfile</code> mantiene todo limpio y evita conflictos.
+</div>
+
+<h3>Estructura final que debes tener:</h3>
+
+<div class="folder-tree">
+    <span class="folder">📁 C:\Users\TU_USUARIO\Desktop\Thin Client\</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">📄 usb_provisioning_image.box</span> &nbsp;&nbsp;<span style="color:#6e7681">← descargado en Paso 3</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">📁 vagrant\</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">📁 usb_creator\</span> &nbsp;&nbsp;<span style="color:#6e7681">← aquí se ejecutará vagrant up</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">📄 Vagrantfile</span> &nbsp;&nbsp;<span style="color:#6e7681">← descargado en Paso 3, movido aquí</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#6e7681">📁 .vagrant\</span> &nbsp;&nbsp;<span style="color:#6e7681">← se creará automáticamente al ejecutar vagrant up</span>
+</div>
+
+<h3>Paso a paso para crear la estructura:</h3>
+
+<p><strong>Opción A — Con PowerShell (recomendado):</strong></p>
+
+<pre>
+<span class="comment"># 1. Abre PowerShell y ve a la carpeta donde descargaste los archivos</span>
+<span class="command">cd "$HOME\Desktop\Thin Client"</span>
+
+<span class="comment"># 2. Verifica que los dos archivos descargados están aquí</span>
+<span class="command">dir</span>
+<span class="comment">#    Deberías ver: usb_provisioning_image.box y Vagrantfile</span>
+
+<span class="comment"># 3. Crea la subcarpeta vagrant\usb_creator</span>
+<span class="command">mkdir vagrant\usb_creator</span>
+
+<span class="comment"># 4. Mueve SOLO el Vagrantfile a la subcarpeta usb_creator</span>
+<span class="command">mv Vagrantfile vagrant\usb_creator\</span>
+
+<span class="comment"># 5. Verifica que todo quedó bien:</span>
+<span class="command">dir</span>
+<span class="comment">#    Aquí solo debe quedar: usb_provisioning_image.box y la carpeta vagrant\</span>
+
+<span class="command">dir vagrant\usb_creator</span>
+<span class="comment">#    Aquí debe estar: Vagrantfile</span>
+</pre>
+
+<p><strong>Opción B — Manualmente con el Explorador de archivos:</strong></p>
+<ol>
+    <li>Abre la carpeta <code>Thin Client</code> en tu Escritorio</li>
+    <li>Dentro, crea una nueva carpeta llamada <code>vagrant</code></li>
+    <li>Dentro de <code>vagrant</code>, crea otra carpeta llamada <code>usb_creator</code></li>
+    <li>Arrastra el archivo <code>Vagrantfile</code> dentro de <code>usb_creator</code></li>
+    <li>El archivo <code>usb_provisioning_image.box</code> se queda en la raíz de <code>Thin Client</code></li>
+</ol>
+
+<div class="warning-box">
+    <strong>No muevas el archivo <code>usb_provisioning_image.box</code></strong> dentro de <code>usb_creator</code>. Debe quedarse en la carpeta principal <code>Thin Client</code> porque se referencia desde ahí en el Paso 5.
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 5 -->
+<div class="step-container" id="paso5">
+    <span class="step-number">5</span>
+    <span class="step-title">Añadir imagen Box a Vagrant</span>
+</div>
+
+<p>Desde PowerShell, en la carpeta <code>Thin Client</code>:</p>
+
+<pre>
+<span class="command">cd "$HOME\Desktop\Thin Client"</span>
+<span class="command">vagrant box add usb_provisioning_image.box --name usb_provisioning_image --force</span>
+</pre>
+
+<div class="info-box">
+    Este proceso puede tardar varios minutos dependiendo del tamaño del archivo .box. No cierres la terminal.
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 6 -->
+<div class="step-container" id="paso6">
+    <span class="step-number">6</span>
+    <span class="step-title">Lanzar la VM de provisioning</span>
+</div>
+
+<ol>
+    <li>Navega a la carpeta <code>usb_creator</code>:</li>
+</ol>
+
+<pre><span class="command">cd vagrant\usb_creator</span></pre>
+
+<ol start="2">
+    <li>(Opcional) Destruye instancias anteriores:</li>
+</ol>
+
+<pre><span class="command">vagrant destroy</span></pre>
+
+<ol start="3">
+    <li><strong>🔒 Conéctate a la VPN</strong> (obligatorio en sites externalized)</li>
+    <li>Lanza la VM:</li>
+</ol>
+
+<pre><span class="command">vagrant up</span></pre>
+
+<div class="success-box">
+    VirtualBox se abrirá automáticamente. Si todo va bien, verás el menú de provisioning en la ventana de la VM.
+</div>
+
+<div class="divider"></div>
+
+<!-- PASO 7 -->
+<div class="step-container" id="paso7">
+    <span class="step-number">7</span>
+    <span class="step-title">Crear el USB de provisioning</span>
+</div>
+
+<ol>
+    <li><strong>Inserta el USB directamente en el portátil</strong> (NO uses un hub USB)</li>
+    <li>En VirtualBox, haz <strong>clic derecho</strong> en el icono USB de la barra inferior de la VM</li>
+    <li>Selecciona tu USB para <strong>adjuntarlo a la VM</strong> (se desconecta del portátil)</li>
+    <li>En el menú de la VM, configura:
+        <table>
+            <tr><th>Campo</th><th>Valor</th></tr>
+            <tr><td>Infra Type</td><td><code>FFNX</code> (normalmente para sites externalized)</td></tr>
+            <tr><td>Warehouse ID</td><td>El WHID de tu site</td></tr>
+        </table>
+    </li>
+    <li>Autentícate con <strong>Midway</strong> (Yubikey/Zukey)</li>
+    <li>Espera a que termine (hasta <strong>15 minutos</strong>)</li>
+</ol>
+
+<div class="warning-box">
+    <strong>Si tu site es co-located</strong>, usa siempre el WHID del site padre.
+</div>
+
+<div class="success-box">
+    Cuando veas el mensaje de éxito, anota la <strong>fecha de expiración</strong> del USB. Una vez expirado, tendrás que crear uno nuevo.
+</div>
+
+<div class="page-break"></div>
+<div class="divider"></div>
+
+<!-- PASO 8 -->
+<div class="step-container" id="paso8">
+    <span class="step-number">8</span>
+    <span class="step-title">Provisionar el Thin Client</span>
+</div>
+
+<div class="substep">
+<h3>8.1 — 🔓 Limpiar TPM</h3>
+<ol>
+    <li>Enciende el Thin Client y pulsa <strong>ESC</strong> para entrar en BIOS</li>
+    <li>Navega a: <code>Security → System Security → Clear TPM → Reset</code></li>
+    <li>Pulsa <strong>F10</strong> para guardar</li>
+</ol>
+</div>
+
+<div class="substep">
+<h3>8.2 — ⚙️ Aplicar defaults</h3>
+<ol>
+    <li>Ve a: <code>File → Apply Defaults and Exit</code></li>
+    <li>El TC se reiniciará automáticamente</li>
+</ol>
+</div>
+
+<div class="substep">
+<h3>8.3 — 🛡️ Desactivar Secure Boot y UEFI</h3>
+<ol>
+    <li>Pulsa <strong>ESC</strong> al reiniciar para volver a BIOS</li>
+    <li>Navega a: <code>Security → Secure Boot Configuration</code></li>
+    <li>Pon <strong>Secure Boot = Disabled</strong></li>
+</ol>
+
+<div class="warning-box">
+    <strong>Importante: Desactivar todo lo relacionado con UEFI.</strong> El USB de provisioning arranca en modo Legacy (no UEFI). Si dejas opciones UEFI activas, el TC no arrancará desde el USB correctamente.
+</div>
+</div>
+
+<div class="substep">
+<h3>8.4 — 🔄 Configurar Boot Mode a Legacy</h3>
+<ol>
+    <li>Navega a: <code>Advanced → Boot Options</code> (o <code>Storage → Boot Order</code> según modelo)</li>
+    <li>Cambia <strong>Boot Mode</strong> de <code>UEFI</code> a <code>Legacy</code> (o <code>CSM Boot</code> si aparece esa opción)</li>
+    <li>Si existe la opción <strong>UEFI Boot Sources</strong>, ponla en <strong>Disabled</strong></li>
+    <li>Asegúrate de que <strong>Legacy Boot Sources = Enabled</strong></li>
+    <li>En el <strong>Boot Order</strong>, coloca <strong>USB</strong> como primera opción de arranque</li>
+</ol>
+
+<div class="info-box">
+    <strong>Resumen de lo que debe quedar desactivado:</strong>
+    <ul style="margin-top:8px">
+        <li>✗ Secure Boot = <strong>Disabled</strong></li>
+        <li>✗ UEFI Boot = <strong>Disabled</strong></li>
+        <li>✗ UEFI Boot Sources = <strong>Disabled</strong></li>
+        <li>✓ Legacy Boot = <strong>Enabled</strong></li>
+        <li>✓ USB Boot = <strong>Enabled y primero en el orden</strong></li>
+    </ul>
+</div>
+</div>
+
+<div class="substep">
+<h3>8.5 — 📡 Desactivar WiFi (si va cableado)</h3>
+<ol>
+    <li>Navega a: <code>Security → Slot Security → Slot 1 M.2 PCIe x1 = Disable</code></li>
+    <li>Guarda con <strong>F10</strong></li>
+</ol>
+</div>
+
+<div class="substep">
+<h3>8.6 — 🚀 Boot desde USB</h3>
+<ol>
+    <li>Inserta el <strong>USB de provisioning</strong> en el Thin Client</li>
+    <li>Pulsa <strong>F9</strong> para el menú de boot</li>
+    <li>Selecciona el USB</li>
+    <li>El provisioning se ejecutará automáticamente</li>
+</ol>
+</div>
+
+<div class="success-box">
+    Una vez completado, el Thin Client estará provisionado y listo para usar en la red externalized.
+</div>
+
+<div class="page-break"></div>
+<div class="divider"></div>
+
+<!-- TROUBLESHOOTING -->
+<h2 id="troubleshooting">🔧 Solución de Problemas</h2>
+
+<div class="error-box">
+    <strong>Error de USB Controller al hacer <code>vagrant up</code></strong><br>
+    → Abre VirtualBox → Configuración de la VM → <strong>USB</strong> → Cambia a <strong>USB 1.1 (OHCI) Controller</strong> → Ejecuta <code>vagrant up</code> de nuevo.
+</div>
+
+<div class="error-box">
+    <strong>Kernel Panic / Unsupported CPU (Windows 11)</strong><br>
+    → Abre VirtualBox → Configuración de la VM → <strong>System → Processor</strong> → Aumenta a <strong>2 CPUs</strong> → Ejecuta <code>vagrant up</code> de nuevo.
+</div>
+
+<div class="error-box">
+    <strong>EDAMS Approval Not Obtained</strong><br>
+    → Verifica que los 3 campos (site, image, use case) están correctamente configurados en <a href="https://website.taka.fc.a2z.com" target="_blank">TAKA</a> antes de provisionar.
+</div>
+
+<div class="error-box">
+    <strong>Provisioning Failure en el menú USB</strong><br>
+    → Verifica: (1) USB no expirado, (2) BIOS correcta, (3) image en TAKA es externalized, (4) settings del TC no borrados.
+</div>
+
+<div class="error-box">
+    <strong>TC acaba en 'asin282r' en vez de 'asin324r'</strong><br>
+    → El infra override del USB no era <code>ffnx</code>. Recrea el USB con el infra type correcto.
+</div>
+
+<div class="info-box">
+    <strong>Troubleshooting avanzado:</strong> En el menú USB del TC, elige "Drop To Shell" y ejecuta en secuencia:<br>
+    <pre style="margin-top:8px">
+<span class="command">sudo enroll_external_device.py</span>
+<span class="command">sudo set_external_iot_credentials.sh</span>
+<span class="command">sudo /usr/local/tce.installed/certifiget_client</span>
+<span class="command">sudo provision_client.sh</span></pre>
+    El primer comando que falle te indicará dónde está el problema.
+</div>
+
+
+
+<!-- FOOTER -->
+<div class="footer">
+    <p style="color:#ff9900; font-weight:600;">OpsTech IT — Client Engineering</p>
+    <p>Manual generado por <strong>@fedaniea</strong> — Mayo 2026</p>
+    <p>Para soporte: contacta a tu equipo OTS local o consulta la wiki de OTIE Client Engineering</p>
+</div>
+
+</body>
+</html>
